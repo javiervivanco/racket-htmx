@@ -1,7 +1,7 @@
 #lang info
 (define collection "htmx")
-(define deps '("base"))
-(define build-deps '("scribble-lib" "racket-doc" "rackunit-lib"))
+(define deps '("base" "rackunit-lib"))
+(define build-deps '("scribble-lib" "racket-doc"))
 (define scribblings '(("scribblings/htmx.scrbl" ())))
 (define pkg-desc "DSL funcional en Racket para generar atributos HTMX y X-expressions mediante composición pura")
 (define version "1.0")
