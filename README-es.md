@@ -1,54 +1,48 @@
 # racket-htmx
 
-A functional DSL in Racket for generating HTMX attributes and X-expressions through pure composition.
+Un DSL funcional en Racket para generar atributos HTMX y X-expressions mediante composición pura.
 
-[Español](README-es.md) | English
+Español | [English](README.md)
 
-## Installation
+## Instalación
 
-From the package directory:
+Desde el directorio del paquete:
 
 ```bash
 raco pkg install
 ```
 
-From GitHub:
+## Filosofía de Diseño
 
-```bash
-raco pkg install git://github.com/javiervivanco/racket-htmx
-```
+### 1. Todo es una Expresión (Function-Driven)
 
-## Design Philosophy
+El DSL no utiliza macros complejas. Cada función HTMX retorna un par atributo `'(hx-atributo "valor")` que se compone naturalmente con las funciones de tags HTML.
 
-### 1. Everything is an Expression (Function-Driven)
+### 2. Heurística "Symbol-First"
 
-The DSL doesn't use complex macros. Each HTMX function returns an attribute pair `'(hx-attribute "value")` that naturally composes with HTML tag functions.
+Normalización automática de tipos para ergonomía máxima:
 
-### 2. "Symbol-First" Heuristic
+- **Selectores:** `'mi-id` → `"#mi-id"`, strings intactos
+- **Tiempos:** `500` → `"500ms"`, strings intactos  
+- **URLs:** Soporte de query params con `hash` o `alist`
 
-Automatic type normalization for maximum ergonomics:
-
-- **Selectors:** `'my-id` → `"#my-id"`, strings intact
-- **Times:** `500` → `"500ms"`, strings intact
-- **URLs:** Query params support with `hash` or `alist`
-
-### 3. Natural Composition
+### 3. Composición Natural
 
 ```racket
 (hx:div
   (id 'container)
   (get "/api/data")
   (trigger 'click)
-  "Content")
+  "Contenido")
 ```
 
-Produces:
+Produce:
 
 ```racket
-'(div ((id "container") (hx-get "/api/data") (hx-trigger "click")) "Content")
+'(div ((id "container") (hx-get "/api/data") (hx-trigger "click")) "Contenido")
 ```
 
-## Quick API Reference
+## API Rápida
 
 ### AJAX Core
 
@@ -59,7 +53,7 @@ Produces:
 (patch url [params])         ; hx-patch
 (delete url [params])        ; hx-delete
 
-;; Helper for complex URLs
+;; Helper para URLs complejas
 (req path #:params (hash 'q "test") #:encode? #t)
 ```
 
@@ -82,7 +76,7 @@ Produces:
 (on-load #:delay [ms] #:throttle [ms] #:filter [js-cond])
 ```
 
-**Example:**
+**Ejemplo:**
 
 ```racket
 (trigger 'keyup 
@@ -112,8 +106,8 @@ Produces:
 ### Parameters & Values
 
 ```racket
-(vals data)                  ; hx-vals (serializes hash/alist to JSON)
-(params allow #:mode [mode]) ; hx-params (filters parameters)
+(vals data)                  ; hx-vals (serializa hash/alist a JSON)
+(params allow #:mode [mode]) ; hx-params (filtra parámetros)
 ```
 
 ### Indicators & Sync
@@ -137,7 +131,7 @@ Produces:
 
 ```racket
 (ext . names)                ; hx-ext
-(ws-connect url)             ; WebSocket (requires ext 'ws)
+(ws-connect url)             ; WebSocket (requiere ext 'ws)
 (sse-connect url)            ; Server-Sent Events
 (sse-swap message-name)
 (on event-name js-code)      ; hx-on:eventname
@@ -147,7 +141,7 @@ Produces:
 
 ```racket
 (id val)
-(class . classes)            ; Multiple classes
+(class . classes)            ; Múltiples clases
 (name val)
 (value val)
 (type val)
@@ -157,7 +151,7 @@ Produces:
 (alt text)
 (title text)
 
-;; Booleans
+;; Booleanos
 (disabled [active?])
 (required [active?])
 (readonly [active?])
@@ -165,7 +159,7 @@ Produces:
 (selected [active?])
 (hidden [active?])
 
-;; Others
+;; Otros
 (autocomplete val)
 (method val)
 (action url)
@@ -174,14 +168,14 @@ Produces:
 (role val)
 (style css)
 
-;; Dynamic
+;; Dinámicos
 (data attr-name val)         ; data-*
 (aria attr-name val)         ; aria-*
 ```
 
 ### HTML Tags
 
-All tags follow the `hx:tagname` pattern:
+Todos los tags siguen el patrón `hx:tagname`:
 
 ```racket
 ;; Block
@@ -224,9 +218,9 @@ hx:script hx:style hx:link hx:meta
 hx:br hx:hr
 ```
 
-## Examples
+## Ejemplos
 
-### Search with Debounce
+### Search con Debounce
 
 ```racket
 (hx:div
@@ -235,7 +229,7 @@ hx:br hx:hr
   
   (hx:input
     (name "q")
-    (placeholder "Search...")
+    (placeholder "Buscar...")
     
     ;; HTMX Logic
     (post "/search" (hash 'v 2))
@@ -244,22 +238,22 @@ hx:br hx:hr
     (indicator 'loading-spinner)
     (swap 'innerHTML #:transition? #t))
   
-  (hx:div (id 'loading-spinner) "Loading...")
+  (hx:div (id 'loading-spinner) "Cargando...")
   (hx:div (id 'results-area)))
 ```
 
-**Result X-expr:**
+**Resultado X-expr:**
 
 ```racket
 '(div ((id "search-box") (class "p-4 bg-gray-100"))
   (input ((name "q")
-          (placeholder "Search...")
+          (placeholder "Buscar...")
           (hx-post "/search?v=2")
           (hx-trigger "keyup changed delay:500ms")
           (hx-target "#results-area")
           (hx-indicator "#loading-spinner")
           (hx-swap "innerHTML transition:true")))
-  (div ((id "loading-spinner")) "Loading...")
+  (div ((id "loading-spinner")) "Cargando...")
   (div ((id "results-area"))))
 ```
 
@@ -269,44 +263,44 @@ hx:br hx:hr
 (hx:div
   (id 'posts)
   
-  ;; Existing content
+  ;; Contenido existente
   (hx:article "Post 1")
   (hx:article "Post 2")
   
-  ;; Load trigger
+  ;; Trigger de carga
   (hx:div
     (get "/api/posts" (hash 'offset 10))
     (trigger 'revealed)
     (swap 'afterend)
-    "Scroll for more..."))
+    "Scroll para más..."))
 ```
 
-### Polling (Automatic Updates)
+### Polling (Updates Automáticos)
 
 ```racket
 (hx:div
   (id 'status)
   
   (get "/api/status")
-  (poll 5000)  ; Every 5 seconds
+  (poll 5000)  ; Cada 5 segundos
   (swap 'innerHTML)
   
-  "Status: Loading...")
+  "Estado: Cargando...")
 ```
 
-### Form with Confirmation
+### Form con Confirmación
 
 ```racket
 (hx:form
   (hx:button
     (delete "/api/user/123")
-    (confirm "Delete user?")
+    (confirm "¿Eliminar usuario?")
     (target 'result)
     (swap 'innerHTML)
-    "Delete"))
+    "Eliminar"))
 ```
 
-### Complex Triggers
+### Triggers Complejos
 
 ```racket
 (hx:input
@@ -339,10 +333,10 @@ hx:br hx:hr
       (vals (hash 'room "general"))
       (target 'messages)
       (swap 'beforeend)
-      "Send")))
+      "Enviar")))
 ```
 
-### Composition and Reusability
+### Composición y Reutilización
 
 ```racket
 ;; Helper function
@@ -354,80 +348,80 @@ hx:br hx:hr
       (get url)
       (target target-id)
       (swap 'innerHTML #:transition? #t)
-      "Load")))
+      "Cargar")))
 
-;; Usage
+;; Usar
 (hx:div
   (class "grid")
-  (make-card "Users" "/api/users" 'users-list)
-  (make-card "Products" "/api/products" 'products-list)
+  (make-card "Usuarios" "/api/users" 'users-list)
+  (make-card "Productos" "/api/products" 'products-list)
   
   (hx:div (id 'users-list))
   (hx:div (id 'products-list)))
 ```
 
-## Internal Architecture
+## Arquitectura Interna
 
-### Type Normalization
+### Normalización de Tipos
 
 ```racket
 ;; private/normalize.rkt
-(normalize-selector 'my-id)        ; → "#my-id"
+(normalize-selector 'mi-id)        ; → "#mi-id"
 (normalize-time 500)               ; → "500ms"
 (normalize-json (hash 'a 1))       ; → "{\"a\":1}"
 (normalize-url "/api" (hash 'q 1)) ; → "/api?q=1"
 ```
 
-### Attribute Fusion
+### Fusión de Atributos
 
-The `private/tags.rkt` module implements separation logic:
+El módulo `private/tags.rkt` implementa la lógica de separación:
 
-1. Identifies `'(key val)` pairs as attributes
-2. Flattens nested lists (splice)
-3. Separates content (body)
-4. Constructs final X-expr
+1. Identifica pares `'(key val)` como atributos
+2. Aplana listas anidadas (splice)
+3. Separa contenido (body)
+4. Construye X-expr final
 
 ```racket
 (hx:div
-  (id 'test)           ; → attribute
-  '((class "a"))       ; → flatten to attribute
-  "content")           ; → body
+  (id 'test)           ; → atributo
+  '((class "a"))       ; → aplanar a atributo
+  "contenido")         ; → body
 
-;; Result: '(div ((id "test") (class "a")) "content")
+;; Resultado: '(div ((id "test") (class "a")) "contenido")
 ```
 
 ## Testing
 
-Run tests:
+Ejecutar tests:
 
 ```bash
 raco test main.rkt
 ```
 
-See complete examples:
+Ver ejemplos completos:
 
 ```racket
 (require htmx/examples/complete-example)
 ```
 
-## Contributing
+## Contribuir
 
-1. Fork the repository
-2. Create branch: `git checkout -b feature/new-feature`
-3. Commit: `git commit -am 'Add new feature'`
-4. Push: `git push origin feature/new-feature`
+1. Fork del repositorio
+2. Crear branch: `git checkout -b feature/nueva-funcionalidad`
+3. Commit: `git commit -am 'Agregar nueva funcionalidad'`
+4. Push: `git push origin feature/nueva-funcionalidad`
 5. Pull Request
 
-## License
+## Licencia
 
-Dual licensed under Apache-2.0 or MIT.
+Dual licensed bajo Apache-2.0 o MIT.
 
-## Resources
+## Recursos
 
 - [HTMX Documentation](https://htmx.org/docs/)
 - [Racket X-expressions](https://docs.racket-lang.org/xml/index.html)
-- [Examples in htmx/examples/](examples/)
+- [Ejemplos en htmx/examples/](examples/)
 
 ---
 
-**Note:** This DSL generates valid X-expressions. To render HTML, use libraries like `html-writing` or `web-server/templates`.
+**Nota:** Este DSL genera X-expressions válidas. Para renderizar HTML, usar librerías como `html-writing` o `web-server/templates`.
